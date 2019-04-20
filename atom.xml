@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://cl0ud.site/"/>
-  <updated>2019-04-20T03:30:52.103Z</updated>
+  <updated>2019-04-20T03:35:25.692Z</updated>
   <id>http://cl0ud.site/</id>
   
   <author>
@@ -17,27 +17,13 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>clean</title>
-    <link href="http://cl0ud.site/2019/04/20/clean/"/>
-    <id>http://cl0ud.site/2019/04/20/clean/</id>
-    <published>2019-04-20T03:30:52.000Z</published>
-    <updated>2019-04-20T03:30:52.103Z</updated>
-    
-    <summary type="html">
-    
-    </summary>
-    
-    
-  </entry>
-  
-  <entry>
     <title></title>
     <link href="http://cl0ud.site/2019/04/20/msf%E5%90%8E%E6%B8%97%E9%80%8F%E4%B9%8B%E5%81%87%E5%86%92%E4%BB%A4%E7%89%8C/"/>
     <id>http://cl0ud.site/2019/04/20/msf后渗透之假冒令牌/</id>
     <published>2019-04-20T03:25:13.445Z</published>
-    <updated>2019-04-20T03:30:40.490Z</updated>
+    <updated>2019-04-20T03:35:25.692Z</updated>
     
-    <content type="html"><![CDATA[<h1 id="MSF后渗透之假冒令牌"><a href="#MSF后渗透之假冒令牌" class="headerlink" title="MSF后渗透之假冒令牌"></a>MSF后渗透之假冒令牌</h1><h2 id="1-假冒令牌原理："><a href="#1-假冒令牌原理：" class="headerlink" title="1.假冒令牌原理："></a>1.假冒令牌原理：</h2><p> 假冒令牌可以假冒一个网络中的另一个用户进行各类操作。所谓的令牌：例如当一个用户登录系统，则它会被赋予一个访问令牌作为认证信息。所以当一个攻击者需要域管理员的操作权限时候，需要通过假冒令牌方式进行入侵攻击。</p><p>windows_token类似于web中的cookie，当用户登陆后则后续操作校验token即可。在域环境中我们token分为两种：<br>交互式token:我们登录后的token<br>非交互token:例如我们通过IPC连接，或登录注销后都为非交互token</p><h2 id="2-攻击演示"><a href="#2-攻击演示" class="headerlink" title="2.攻击演示:"></a>2.攻击演示:</h2><p>攻击拓扑图图下：<br><img src="https://img-blog.csdnimg.cn/20190414231349802.png?x-oss-process=image/watermark,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM5NzE3NzI2,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>1、首先使用MS08-067获取192.168.0.100 win2K3主机shell:<br><img src="https://img-blog.csdnimg.cn/20190414232712814.png?x-oss-process=image/watermark, ,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM5NzE3NzI2,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>2、system权限，加载load incognito 模块，查看当前所有token:list_tokens -u：<br><img src="https://img-blog.csdnimg.cn/20190414232938763.png?x-oss-process=image/watermark, ,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM5NzE3NzI2,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>impersonation tokens: 现在未存在其他高权限用户<br>3、现在我们模拟域管理员非交互token：<br>使用192.168.0.103 AD服务器通过IPC共享访问下WIN2K3的某个文件：</p><p><img src="https://img-blog.csdnimg.cn/20190414233240840.png?x-oss-process=image/watermark, ,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM5NzE3NzI2,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>4、再次执行list_tokens -u：<br>发现新增一个非交互域管理员token:<br><img src="https://img-blog.csdnimg.cn/20190414233330312.png?x-oss-process=image/watermark, ,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM5NzE3NzI2,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>5、通过impersonate_token  TEST\Administrator 假冒域管理员令牌并添加用户：<br><img src="https://img-blog.csdnimg.cn/20190414233438426.png" alt="在这里插入图片描述"><br>当前身份：<br><img src="https://img-blog.csdnimg.cn/20190414233529126.png" alt="在这里插入图片描述"><br>添加用户：<br><img src="https://img-blog.csdnimg.cn/2019041423372958.png" alt="在这里插入图片描述"></p><p>title: MSF后渗透之假冒令牌<br>date: 2019-04-20 11:29:16<br>tags:后渗透</p>]]></content>
+    <content type="html"><![CDATA[<h1 id="MSF后渗透之假冒令牌"><a href="#MSF后渗透之假冒令牌" class="headerlink" title="MSF后渗透之假冒令牌"></a>MSF后渗透之假冒令牌</h1><h2 id="1-假冒令牌原理："><a href="#1-假冒令牌原理：" class="headerlink" title="1.假冒令牌原理："></a>1.假冒令牌原理：</h2><p> 假冒令牌可以假冒一个网络中的另一个用户进行各类操作。所谓的令牌：例如当一个用户登录系统，则它会被赋予一个访问令牌作为认证信息。所以当一个攻击者需要域管理员的操作权限时候，需要通过假冒令牌方式进行入侵攻击。</p><p>windows_token类似于web中的cookie，当用户登陆后则后续操作校验token即可。在域环境中我们token分为两种：<br>交互式token:我们登录后的token<br>非交互token:例如我们通过IPC连接，或登录注销后都为非交互token</p><h2 id="2-攻击演示"><a href="#2-攻击演示" class="headerlink" title="2.攻击演示:"></a>2.攻击演示:</h2><p>攻击拓扑图图下：<br><img src="https://img-blog.csdnimg.cn/20190414231349802.png" alt="在这里插入图片描述"><br>1、首先使用MS08-067获取192.168.0.100 win2K3主机shell:<br><img src="https://img-blog.csdnimg.cn/20190414232712814.png" alt="在这里插入图片描述"><br>2、system权限，加载load incognito 模块，查看当前所有token:list_tokens -u：<br><img src="https://img-blog.csdnimg.cn/20190414232938763.png" alt="在这里插入图片描述"><br>impersonation tokens: 现在未存在其他高权限用户<br>3、现在我们模拟域管理员非交互token：<br>使用192.168.0.103 AD服务器通过IPC共享访问下WIN2K3的某个文件：</p><p><img src="https://img-blog.csdnimg.cn/20190414233240840.png" alt="在这里插入图片描述"><br>4、再次执行list_tokens -u：<br>发现新增一个非交互域管理员token:<br><img src="https://img-blog.csdnimg.cn/20190414233330312.png" alt="在这里插入图片描述"><br>5、通过impersonate_token  TEST\Administrator 假冒域管理员令牌并添加用户：<br><img src="https://img-blog.csdnimg.cn/20190414233438426.png" alt="在这里插入图片描述"><br>当前身份：<br><img src="https://img-blog.csdnimg.cn/20190414233529126.png" alt="在这里插入图片描述"><br>添加用户：<br><img src="https://img-blog.csdnimg.cn/2019041423372958.png" alt="在这里插入图片描述"></p><p>title: MSF后渗透之假冒令牌<br>date: 2019-04-20 11:29:16<br>tags:后渗透</p>]]></content>
     
     <summary type="html">
     
